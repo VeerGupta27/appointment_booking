@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule with Toshima</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .hidden {
+            display: none;
+        }
+        #no-btn {
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="step-1">
+        <h2>Hey Toshima! 😊</h2>
+        <p>Type a reply or use an emoji:</p>
+        <input type="text" id="reply-input" placeholder="Your response here...">
+        <button onclick="saveReply()">Send</button>
+    </div>
+
+    <div class="container hidden" id="step-2">
+        <h2>How are you doing? 😊</h2>
+        <input type="text" id="status-input" placeholder="Your response here...">
+        <button onclick="saveStatus()">Send</button>
+    </div>
+
+    <div class="container hidden" id="step-3">
+        <h2>Are you free on 17th March? 🤔</h2>
+        <button id="yes-btn" onclick="confirmAvailability()">Yes</button>
+        <button id="no-btn" onclick="moveNoButton()">No</button>
+    </div>
+
+    <div class="container hidden" id="step-4">
+        <h2>Veer wants to book an appointment with you. 🎉</h2>
+        <button onclick="confirmAppointment()">Confirm Appointment</button>
+    </div>
+
+    <div class="container hidden" id="step-5">
+        <h2>Congrats to Veer! 🎊 He got an appointment with Toshima!</h2>
+    </div>
+
+    <script>
+        let responses = [];
+
+        function saveReply() {
+            const reply = document.getElementById('reply-input').value;
+            responses.push(`Reply: ${reply}`);
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+        }
+
+        function saveStatus() {
+            const status = document.getElementById('status-input').value;
+            responses.push(`Status: ${status}`);
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.remove('hidden');
+        }
+
+        function confirmAvailability() {
+            responses.push("Availability: Yes");
+            document.getElementById('step-3').classList.add('hidden');
+            document.getElementById('step-4').classList.remove('hidden');
+        }
+
+        function confirmAppointment() {
+            responses.push("Appointment Confirmed");
+            document.getElementById('step-4').classList.add('hidden');
+            document.getElementById('step-5').classList.remove('hidden');
+            saveResponses();
+        }
+
+        function moveNoButton() {
+            const noBtn = document.getElementById('no-btn');
+            const randomX = Math.floor(Math.random() * 200) - 100;
+            const randomY = Math.floor(Math.random() * 200) - 100;
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        function saveResponses() {
+            fetch('/save-response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ responses })
+            }).then(response => response.text())
+              .then(data => console.log(data))
+              .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
